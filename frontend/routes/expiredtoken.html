@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Expired</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top left, #1e1e2f, #111119);
+            color: white;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            width: 90%;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* SVG Styling */
+        .icon-wrapper {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .timer-svg {
+            width: 120px;
+            height: 120px;
+            fill: none;
+            stroke: #764ba2;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 10px rgba(118, 75, 162, 0.5));
+        }
+
+        .clock-hand {
+            transform-origin: center;
+            animation: rotate 4s linear infinite;
+            stroke: #667eea;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #fff, #a5a5a5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            font-size: 0.95rem;
+            color: #999;
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        .btn-redirect {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-redirect:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(118, 75, 162, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-redirect:active {
+            transform: translateY(-1px);
+        }
+
+        .bg-circle {
+            position: absolute;
+            z-index: -1;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            filter: blur(80px);
+            opacity: 0.2;
+        }
+
+        .circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -50px;
+        }
+
+        .circle-2 {
+            width: 250px;
+            height: 250px;
+            bottom: -50px;
+            left: -50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-circle circle-1"></div>
+    <div class="bg-circle circle-2"></div>
+
+    <div class="container">
+        <div class="icon-wrapper">
+            <svg class="timer-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14" class="clock-hand"></polyline>
+                <path d="M12 2v2M12 20v2M2 12h2M20 12h2" opacity="0.5"></path>
+            </svg>
+        </div>
+
+        <h1>Session Expired</h1>
+        <p>Your security token has timed out or is no longer valid. For your protection, please log in again to
+            continue.</p>
+
+        <button class="btn-redirect" id="loginBtn">Back to Login</button>
+    </div>
+
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            window.location.href = window.location.origin + '/index.html';
+        });
+    </script>
+</body>
+
+</html>

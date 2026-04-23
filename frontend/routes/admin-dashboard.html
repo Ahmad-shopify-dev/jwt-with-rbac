@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - User Management</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-admin {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .badge-user {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .btn-logout {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-container">
+        <header>
+            <h1>Admin Dashboard <span class="admin-name"></span></h1>
+            <button id="refreshBtn">Refresh Data</button>
+        </header>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="user-list">
+                    <!-- Data yahan JavaScript se aayega -->
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Loading users...</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="btn-logout">logout</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userList = document.getElementById('user-list');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const API_URL = 'http://127.0.0.1:5000/api/admin';
+            let token = localStorage.getItem('accessToken');
+            async function fetchUsers() {
+                if(!token || getTokenExpiration(token)) {
+                    // const refreshToken = localStorage.getItem('refreshToken');
+                    // if(!refreshToken) {
+                    //     userList.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">No token found. Please log in first.</td></tr>`;
+                    //     return;
+                    // }
+                    // const newAccessToken = await refreshAccessToken(refreshToken);
+                    const newAccessToken = await refreshAccessToken();
+                    token = newAccessToken;
+                    if(!newAccessToken) {
+                        userList.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Session expired. Please log in again.</td></tr>`;
+                        return;
+                    }
+                }
+
+                await renderDashboard(token, API_URL);
+
+                function getTokenExpiration(token) {
+                    try {
+                        if (!token) return true;
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        const currentTime = Math.floor(Date.now() / 1000);
+                        return payload.exp < currentTime;
+                    }
+                    catch (error) {
+                        return true;
+                    }
+                }
+            }
+
+            async function refreshAccessToken() {
+                // const refreshToken = localStorage.getItem("refreshToken");
+
+                const response = await fetch('http://127.0.0.1:5000/api/refresh-token', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include'
+                    // body: JSON.stringify({ refreshToken: refreshToken })
+                });
+                const data = await response.json();
+                if (data.success && data.data.accessToken) {
+                    localStorage.setItem("accessToken", data.data.accessToken);
+                    return data.data.accessToken;
+                }
+                // localStorage.removeItem("refreshToken");
+                return null;
+            }
+
+            async function renderDashboard(token, API_URL) {
+                try {
+                    userList.innerHTML = '<tr><td colspan="4" style="text-align: center;">Fetching data...</td></tr>';
+                    const response = await fetch(API_URL, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    if (data.success) {
+                        document.querySelector('.admin-name').textContent = "(" + data.data.admin.name + ")";
+                        displayUsers(data.data.users);
+                    } else {
+                        userList.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">${data.message}</td></tr>`;
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    userList.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Error loading data. Make sure your API server is running at ${API_URL}</td></tr>`;
+                }
+            }
+
+            function displayUsers(users) {
+                userList.innerHTML = ''; 
+
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    const roleClass = user.role === 'admin' ? 'badge-admin' : 'badge-user';
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td><span class="badge ${roleClass}">${user.role}</span></td>
+                        <td>Active</td>
+                    `;
+                    userList.appendChild(row);
+                });
+            }
+
+            refreshBtn.addEventListener('click', fetchUsers);
+            fetchUsers();
+
+            const logoutBtn = document.querySelector('.btn-logout');
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // localStorage.removeItem('refreshToken');
+                localStorage.removeItem('accessToken');
+                window.location.href = window.location.origin + '/index.html'
+            });
+        });
+    </script>
+</body>
+
+</html>

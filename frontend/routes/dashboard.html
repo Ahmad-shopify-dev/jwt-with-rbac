@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fe;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 50px;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+        }
+
+        .sidebar nav ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar nav ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .sidebar nav ul li.active a, 
+        .sidebar nav ul li a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .logout {
+            margin-top: auto;
+        }
+
+        .logout a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0px 6px 0px;
+        }
+        span.user-email {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .search-bar {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notifications {
+            position: relative;
+            font-size: 1.2rem;
+            color: #764ba2;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #ff4d4d;
+            border-radius: 50%;
+        }
+
+        .user-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+        }
+
+        .user-info h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .user-info p {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        /* --- STATS CARDS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+        }
+
+        .icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .purple { background: #e0d4ff; color: #764ba2; }
+        .blue { background: #d4e3ff; color: #4b89a2; }
+        .green { background: #d4ffe0; color: #4ba266; }
+        .orange { background: #ffebd4; color: #a2764b; }
+
+        .stat-info h3 {
+            font-size: 1.4rem;
+        }
+
+        .stat-info p {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* --- TABLE --- */
+        .table-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-view {
+            padding: 8px 18px;
+            background: #764ba2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            text-align: left;
+            padding: 15px;
+            color: #888;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        table td {
+            padding: 15px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status.paid { background: #d4ffe0; color: #2d7a45; }
+        .status.pending { background: #fff9d4; color: #8a7b1e; }
+        .status.cancelled { background: #ffd4d4; color: #a24b4b; }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; padding: 30px 10px; }
+            .sidebar span, .sidebar .logout span, .logo span { display: none; }
+            .main-content { margin-left: 80px; }
+            .search-bar { width: 200px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Nexus UI</span>
+            </div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="#"><i class="fa-solid fa-house"></i> Overview</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chart-line"></i> Analytics</a></li>
+                    <li><a href="#"><i class="fa-solid fa-wallet"></i> Payments</a></li>
+                    <li><a href="#"><i class="fa-solid fa-users"></i> Customers</a></li>
+                    <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="logout">
+                <a href="index.html" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                <span class="user-email">email.exmaple.com</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search data...">
+                </div>
+                <div class="user-profile">
+                    <div class="notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="badge"></span>
+                    </div>
+                    <div class="user-image">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=764ba2&color=fff" alt="Profile">
+                    </div>
+                    <div class="user-info">
+                        <h4 class="user-name">Admin User</h4>
+                        <p>Premium Account</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon-box purple"><i class="fa-solid fa-eye"></i></div>
+                    <div class="stat-info">
+                        <h3>12,450</h3>
+                        <p>Total Views</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-box blue"><i class="fa-solid fa-cart-shopping"></i></div>
+                    <div class="stat-info">
+                        <h3>3,210</h3>
+                        <p>Sales</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-box green"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div class="stat-info">
+                        <h3>$45,200</h3>
+                        <p>Revenue</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-box orange"><i class="fa-solid fa-user-plus"></i></div>
+                    <div class="stat-info">
+                        <h3>158</h3>
+                        <p>New Clients</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <div class="table-header">
+                    <h2>Recent Transactions</h2>
+                    <button class="btn-view">View All</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>Oct 24, 2023</td>
+                            <td>$250.00</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>Oct 23, 2023</td>
+                            <td>$1,200.00</td>
+                            <td><span class="status pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td>Robert Brown</td>
+                            <td>Oct 22, 2023</td>
+                            <td>$75.50</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td>Alice Wilson</td>
+                            <td>Oct 21, 2023</td>
+                            <td>$430.00</td>
+                            <td><span class="status cancelled">Cancelled</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", async () => {
+            const token = localStorage.getItem("accessToken");
+            const isTokenExpired = getTokenExpiration(token);
+            if(!token || isTokenExpired) {
+                // INITIAL LOGIC WHILE WORKING WITH THE SINGLE TOKEN
+                // localStorage.removeItem("accessToken");
+                // window.location.href = window.location.origin + "/routes/expiredtoken.html";
+                const accessToken = await refreshAccessToken();
+                if (!accessToken) {
+                    window.location.href = window.location.origin + "/index.html";
+                    return;
+                }
+
+                await renderDashboard(accessToken);
+            } else {
+                console.log("_________ AUTHENTICATED USER __________");
+                await renderDashboard(token);
+            }
+
+            function getTokenExpiration(token) {
+                try {
+                    if (!token) return true;
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const currentTime = Math.floor(Date.now() / 1000);
+                    return payload.exp < currentTime;
+                }
+                catch (error) {
+                    return true;
+                }
+            }
+
+            async function refreshAccessToken() {
+                // WE ARE HANDLING THIS WITH COOKIES NOW, SO THIS FUNCTION MIGHT NOT BE NEEDED, BUT I'LL KEEP IT HERE FOR REFERENCE
+                // const refreshToken = localStorage.getItem("refreshToken");
+
+                // if(!refreshToken) {
+                //     window.location.href = window.location.origin + "/index.html";
+                //     return;
+                // }
+                const response = await fetch('http://127.0.0.1:5000/api/refresh-token', {
+                                    method: 'POST',
+                                    headers: {"Content-Type": "application/json"},
+                                    credentials: 'include' // THIS ENSURES THAT COOKIES ARE SENT WITH THE REQUEST
+                                    // body: JSON.stringify({ refreshToken: refreshToken }) // NO NEED TO SEND REFRESH TOKEN IN BODY SINCE WE ARE USING COOKIES
+                                });
+                const data = await response.json();
+                if(data.success && data.data.accessToken) {
+                    localStorage.setItem("accessToken", data.data.accessToken);
+                    // localStorage.setItem("refreshToken", data.data.refreshToken);
+                    return data.data.accessToken;
+                } else {
+                    // localStorage.removeItem("refreshToken");
+                    localStorage.removeItem("accessToken");
+                    window.location.href = window.location.origin + "/index.html";
+                    return null;
+                }
+            }
+
+            async function renderDashboard(token) {
+                fetch("http://127.0.0.1:5000/api/dashboard", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const { name, email } = data.data;
+                        const userNameElem = document.querySelector(".user-name");
+                        const userImageElem = document.querySelector(".user-image img");
+                        const userEmailElem = document.querySelector(".user-email");
+                        userNameElem.textContent = name.toUpperCase();
+                        userImageElem.setAttribute("src", "https://ui-avatars.com/api/?name=" + name.split(" ").join("+") + "&background=764ba2&color=fff");
+                        userEmailElem.textContent = email;
+                    } else {
+                        console.error("Error fetching dashboard data:", data.message);
+                        localStorage.removeItem("accessToken");
+                        window.location.href = window.location.origin + "/routes/expiredtoken.html";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching dashboard data:", error);
+                    localStorage.removeItem("accessToken");
+                    window.location.href = window.location.origin + "/index.html";
+                });
+            }
+        });
+
+        const logoutBtn = document.querySelector(".btn-logout");
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            localStorage.removeItem("accessToken");
+            // localStorage.removeItem("refreshToken");
+            window.location.href = window.location.origin + "/index.html";
+        });
+
+    </script>   
+
+</body>
+</html>
